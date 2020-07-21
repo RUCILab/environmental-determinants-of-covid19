@@ -60,8 +60,4 @@ list <- lapply(combined_df$MODZCTA, function(x) zip2tract(x))
 combined_cases <- rbind.fill(list)
 
 write.csv(combined_cases, '../nyc-covid-timeseries-by-tract.csv', row.names = FALSE)
-
-
-
-
 write.csv(combined_df, '../nyc-covid-timeseries-zcta.csv', row.names = FALSE)
