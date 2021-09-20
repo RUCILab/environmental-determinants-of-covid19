@@ -2,6 +2,12 @@ library(tidyverse)
 library(tidytransit)
 library(lubridate)
 library(data.table)
+library(geojsonsf)
+library(fuzzyjoin)
+
+setwd("//172.19.36.246/nycdohmh/Environmental Determinants of COVID-19")
+
+nyc <- geojson_sf('https://data.cityofnewyork.us/api/geospatial/tqmj-j8zm?method=export&format=GeoJSON')
 
 # Read in NYC subway GTFS feed
 gtfs <- read_gtfs("envdata/transit/gtfs.zip")
@@ -46,6 +52,9 @@ crosswalk <- subway %>%
   distinct(`Station ID`, .keep_all = TRUE) %>%
   select('Station ID',geometry)
 
+# Write out the crosswalk for later use
+write_csv(crosswalk,"subway-station-crosswalk.csv")
+
 joined <- subway %>%
   left_join(crosswalk, by = 'Station ID') %>%
   unnest_wider(geometry,names_sep = "geo") %>%
@@ -66,7 +75,7 @@ fig1 <- ggplot(blm_ridership) +
   ggtitle("Change in NYC Subway Ridership During BLM Protests, May - June 2020")
 
 fig2 <- ggplot(blm_ridership %>% filter(date != "2020-05-03")) +
-  geom_sf(data = nyc) +
+  #geom_sf(data = nyc) +
   geom_point(aes(x = lon, y = lat, color = pct_change_break)) +
   facet_wrap(~date) +
   ggtitle("Change in NYC Subway Ridership During BLM Protests (2020) - By Station")
